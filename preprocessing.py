@@ -35,11 +35,17 @@ def augment(raw_data_path, generated_data_path, image_format, augment_time):
         else:
             print("Skip %s." % path)
 
+    if not os.path.exists(generated_data_path):
+        os.mkdir(generated_data_path)
+
     for i in range(len(img_list)):
         plt.imsave(os.path.join(generated_data_path, "im%s.jpg" % (i+1)), img_list[i])
 
 
 def preprocess(raw_data_path, preprocessed_data_path, image_format="jpg"):
+    if not os.path.exists(preprocessed_data_path):
+        os.mkdir(preprocessed_data_path)
+
     for path in os.listdir(raw_data_path):
         if image_format in path:
             img = plt.imread(os.path.join(raw_data_path, path))
