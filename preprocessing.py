@@ -9,7 +9,7 @@ def crop(img, size, augment_time=1):
     # img: numpy.array [height, width, 3]
     height, width, _ = img.shape
     height_mark = np.random.randint(0, height - size[0] - 1, size=augment_time)
-    width_mark= np.random.randint(0, width - size[1] - 1, size=augment_time)
+    width_mark = np.random.randint(0, width - size[1] - 1, size=augment_time)
 
     imgs = []
     for i in range(augment_time):

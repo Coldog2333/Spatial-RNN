@@ -86,7 +86,7 @@ class Spatial_RNN(nn.Module):
         return batch_H
 
     def forward(self, img):
-        feature_map = F.tanh(self.DCNN(img))
+        feature_map = torch.tanh(self.DCNN(img))
         LRNN_input = self.LRNN_in_conv(img)
 
         directions = ["l2r", "r2l", "t2b", "b2t"]
@@ -96,7 +96,7 @@ class Spatial_RNN(nn.Module):
         LRNN_output = torch.stack(LRNN_output, dim=1)
         LRNN_output = torch.max(LRNN_output, dim=1)[0]
 
-        output = F.sigmoid(self.LRNN_out_conv(LRNN_output))
+        output = torch.sigmoid(self.LRNN_out_conv(LRNN_output))
         return output
 
 
