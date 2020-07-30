@@ -37,7 +37,7 @@ Loss_Curve = []
 def visualization(net, input_img, out_name):
     net.eval()
     output_img = net(input_img)
-    output_img = output_img.squeeze().permute(2, 0, 1).detach().numpy()
+    output_img = (output_img.squeeze().permute(1, 2, 0).detach().cpu().numpy() * 255).astype("int")
     plt.imsave(out_name, output_img)
 
 
@@ -81,7 +81,7 @@ for epoch in range(config.EPOCH):
         tprint("Processed %.2f%% samples...\r" % (step / dataloader_test.__len__() * 100), end="")
     tprint("Loss: %.2f" % (test_loss / (step + 1)))
 
-    visualization(net, dataset_test.img_list[0, :, :, :].unsqueeze(0), "./out.jpg")
+    visualization(net, dataset_test.img_list[0, :, :, :].unsqueeze(0).to(config.device), "./out_epoch%s.jpg" % (epoch + 1))
 
     # if np.mean(test_acc) > max_test_acc:
     #     # save
