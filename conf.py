@@ -18,7 +18,7 @@ class config_general():
             self.DATA_ROOT_PATH = "/Users/didi/Desktop/Coldog/Media/generated_data/"
             self.MODEL_PATH = "/Users/didi/Desktop/Coldog/Media/model/"
         elif platform.system() == "Linux":
-            self.DATA_ROOT_PATH = "/data/dstc8/"
+            self.DATA_ROOT_PATH = "/home/amax/generated_data/"
             # self.DATA_ROOT_PATH = "/data/data_debug/"
             # self.DATA_ROOT_PATH = "/data/data_tune/"
             self.MODEL_PATH = self.DATA_ROOT_PATH + "model/"

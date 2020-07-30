@@ -49,10 +49,18 @@ def preprocess(raw_data_path, preprocessed_data_path, image_format="jpg"):
 
 
 if __name__ == "__main__":
-    raw_data_path = "./data/"
-    generated_data_path = "./generated_data/"
-    preprocessed_data_path = "./preprocessed_data/"
-    augment_time = 200
+    root_path = ""
+    train_data = root_path + "train/"
+    train_generated_data = root_path + "train_generated/"
+    train_preprocessed_data = root_path + "train_preprocessed/"
+    test_data = root_path + "test/"
+    test_generated_data = root_path + "test_generated/"
+    test_preprocessed_data = root_path + "test_preprocessed/"
 
-    augment(raw_data_path, generated_data_path, image_format="png", augment_time=augment_time)
-    preprocess(generated_data_path, preprocessed_data_path, image_format="jpg")
+    augment_time = 100
+
+    augment(train_data, train_generated_data, image_format="png", augment_time=augment_time)
+    preprocess(train_generated_data, train_preprocessed_data, image_format="jpg")
+
+    augment(test_data, test_generated_data, image_format="png", augment_time=augment_time)
+    preprocess(test_generated_data, test_preprocessed_data, image_format="jpg")
