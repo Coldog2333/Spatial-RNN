@@ -15,10 +15,10 @@ class config_general():
         self.HIDDEN_SIZE = 200
 
         if platform.system() == "Darwin":
-            self.DATA_ROOT_PATH = "/Users/didi/Desktop/Coldog/Media/generated_data/"
-            self.MODEL_PATH = "/Users/didi/Desktop/Coldog/Media/model/"
+            self.DATA_ROOT_PATH = "/Users/didi/Desktop/Coldog/Github/Spatial-RNN/MSCOCO/"
+            self.MODEL_PATH = "/Users/didi/Desktop/Coldog/Github/Spatial-RNN/model/"
         elif platform.system() == "Linux":
-            self.DATA_ROOT_PATH = "/home/amax/generated_data/"
+            self.DATA_ROOT_PATH = "/home/amax/data/val2017_tiny/"
             # self.DATA_ROOT_PATH = "/data/data_debug/"
             # self.DATA_ROOT_PATH = "/data/data_tune/"
             self.MODEL_PATH = self.DATA_ROOT_PATH + "model/"
