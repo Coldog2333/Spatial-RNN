@@ -17,11 +17,12 @@ config = config_general()
 
 
 # ------------
-dataset_train = train_dataset(data_dir="./preprocessed_data", ground_truth_dir="./generated_data")
+dataset_train = train_dataset(data_dir=os.path.join(config.DATA_ROOT_PATH, "train_preprocessed/"),
+                              ground_truth_dir=os.path.join(config.DATA_ROOT_PATH, "train_generated/"))
 
 dataloader_train = torch.utils.data.DataLoader(dataset=dataset_train, batch_size=config.BATCH_SIZE_TRAIN, shuffle=True, num_workers=1)
 
-net = Spatial_RNN().to("cpu")
+net = Spatial_RNN(config).to(config.device)
 optimizer = torch.optim.Adam(net.parameters(), lr=config.LEARNING_RATE, weight_decay=config.WEIGHT_DECAY)
 loss_function = torch.nn.MSELoss()
 max_test_acc = 0.

@@ -3,6 +3,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from conf import config_general
 
 class DeepCNN(torch.nn.Module):
     def __init__(self):
@@ -52,8 +53,9 @@ class DeepCNN(torch.nn.Module):
 
 
 class Spatial_RNN(nn.Module):
-    def __init__(self):
+    def __init__(self, config):
         super(Spatial_RNN, self).__init__()
+        self.config = config
         self.DCNN = DeepCNN()
         self.LRNN_in_conv = nn.Conv2d(in_channels=15, out_channels=16, kernel_size=(3, 3), padding=(1, 1))
         self.LRNN_out_conv = nn.Conv2d(in_channels=16, out_channels=3, kernel_size=(3, 3), padding=(1, 1))
@@ -64,7 +66,7 @@ class Spatial_RNN(nn.Module):
         batch_size = X.shape[0]
         n = X.shape[2]
         batch_H = []
-        h = torch.zeros(size=(16, 96))
+        h = torch.zeros(size=(16, 96)).to(self.config.device)
         for i in range(batch_size):
             H = []
             for k in range(n):
@@ -99,10 +101,11 @@ class Spatial_RNN(nn.Module):
 
 
 if __name__ == "__main__":
+    config = config_general()
     net = DeepCNN()
     fake_img = torch.rand((2, 15, 96, 96))
     dcnn_out = net(fake_img)
     # print(dcnn_out.shape)
 
-    spatial_rnn = Spatial_RNN()
+    spatial_rnn = Spatial_RNN(config=config)
     print(spatial_rnn(fake_img).shape)
