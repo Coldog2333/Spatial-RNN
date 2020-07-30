@@ -9,7 +9,7 @@ class config_general():
     def __init__(self):
         self.EPOCH = 100
         self.LEARNING_RATE = 1e-3
-        self.WEIGHT_DECAY = 0.
+        self.WEIGHT_DECAY = 1e-5
         self.BATCH_SIZE_TRAIN = 10
         self.BATCH_SIZE_TEST = 10
         self.HIDDEN_SIZE = 200

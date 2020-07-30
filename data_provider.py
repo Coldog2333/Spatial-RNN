@@ -33,7 +33,7 @@ def load_img_from_dir(data_dir, image_format="jpg"):
     return img_list
 
 
-class train_dataset(torch.utils.data.Dataset):
+class cv_dataset(torch.utils.data.Dataset):
     def __init__(self, data_dir, ground_truth_dir):
         self.img_list = torch.Tensor(load_img_from_dir(data_dir)).permute(0, 3, 1, 2) / 255
         self.img_list = initialize_image(self.img_list)
