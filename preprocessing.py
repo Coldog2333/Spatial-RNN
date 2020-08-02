@@ -66,7 +66,13 @@ def split_train_test(data_root_path):
         os.mkdir(os.path.join(data_root_path, "test"))
 
     files = os.listdir(data_root_path)
-    for i in range(pos_num + neg_num):
+    i = 0
+    while i < len(files):
+        if "jpg" not in files:
+            continue
+        else:
+            i += 1
+
         if i < pos_num:
             shutil.move(os.path.join(data_root_path, files[i]), os.path.join(data_root_path, "train", files[i]))
         else:
