@@ -60,12 +60,13 @@ def preprocess(raw_data_path, preprocessed_data_path, image_format="jpg"):
 
 def split_train_test(data_root_path):
     pos_num, neg_num = 4000, 1000
+    files = os.listdir(data_root_path)
+
     if not os.path.exists(os.path.join(data_root_path, "train")):
         os.mkdir(os.path.join(data_root_path, "train"))
     if not os.path.exists(os.path.join(data_root_path, "test")):
         os.mkdir(os.path.join(data_root_path, "test"))
 
-    files = os.listdir(data_root_path)
     i = 0
     while i < len(files):
         if "jpg" not in files:
