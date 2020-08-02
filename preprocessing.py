@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import torch
+import shutil
 import matplotlib.pyplot as plt
 
 from conf import config_general
@@ -57,6 +58,22 @@ def preprocess(raw_data_path, preprocessed_data_path, image_format="jpg"):
             print("Skip %s." % path)
 
 
+def split_train_test(data_root_path):
+    pos_num, neg_num = 4000, 1000
+    if not os.path.exists(os.path.join(data_root_path, "train")):
+        os.mkdir(os.path.join(data_root_path, "train"))
+    if not os.path.exists(os.path.join(data_root_path, "test")):
+        os.mkdir(os.path.join(data_root_path, "test"))
+
+    files = os.listdir(data_root_path)
+    for i in range(pos_num + neg_num):
+        if i < pos_num:
+            shutil.move(os.path.join(data_root_path, files[i]), os.path.join(data_root_path, "train", files[i]))
+        else:
+            shutil.move(os.path.join(data_root_path, files[i]), os.path.join(data_root_path, "test", files[i]))
+    print("Splitting done.")
+
+
 if __name__ == "__main__":
     config = config_general()
 
@@ -68,7 +85,9 @@ if __name__ == "__main__":
     test_generated_data = root_path + "test_generated/"
     test_preprocessed_data = root_path + "test_preprocessed/"
 
-    augment_time = 5
+    augment_time = 10
+
+    split_train_test(root_path)
 
     augment(train_data, train_generated_data, image_format="jpg", augment_time=augment_time)
     preprocess(train_generated_data, train_preprocessed_data, image_format="jpg")

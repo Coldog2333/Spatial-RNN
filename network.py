@@ -5,6 +5,7 @@ import torch.nn.functional as F
 
 from conf import config_general
 
+
 class DeepCNN(torch.nn.Module):
     def __init__(self):
         super(DeepCNN, self).__init__()

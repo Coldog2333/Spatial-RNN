@@ -23,7 +23,6 @@ class Pipeline():
     def __init__(self, network_f, optimizer_f, loss_function_f, data_paths, config):
         self.traindata_path, self.testdata_path, self.devdata_path = data_paths
         self.network_f, self.optimizer_f, self.loss_function, self.config = network_f, optimizer_f, loss_function_f, config
-
         self.set_random_seed()
 
     def set_random_seed(self):
@@ -83,10 +82,8 @@ class Pipeline():
 
             if step == 0:
                 plt.imsave("./in.jpg", self.dataset_test.img_list[0, :3, :, :].permute(1, 2, 0).detach().cpu().numpy())
-                plt.imsave("./ground_truth.jpg",
-                           self.dataset_test.target_img_list[0, :, :, :].permute(1, 2, 0).detach().cpu().numpy())
-            self.visualization("./out_epoch%s.jpg" % (epoch + 1),
-                          self.dataset_test.img_list[0, :, :, :].unsqueeze(0).to(config.device))
+                plt.imsave("./ground_truth.jpg", self.dataset_test.target_img_list[0, :, :, :].permute(1, 2, 0).detach().cpu().numpy())
+            self.visualization("./out_epoch%s.jpg" % (epoch + 1), self.dataset_test.img_list[0, :, :, :].unsqueeze(0).to(config.device))
 
             if test_loss < min_test_loss:
                 # save

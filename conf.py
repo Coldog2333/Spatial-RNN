@@ -19,8 +19,8 @@ class config_general():
             self.DATA_ROOT_PATH = "/Users/didi/Desktop/Coldog/Github/Spatial-RNN/MSCOCO/"
             self.MODEL_PATH = "/Users/didi/Desktop/Coldog/Github/Spatial-RNN/model/"
         elif platform.system() == "Linux":
-            self.DATA_ROOT_PATH = "/home/amax/data/val2017_tiny/"
-            # self.DATA_ROOT_PATH = "/data/data_debug/"
+            self.DATA_ROOT_PATH = "/home/amax/data/val2017/"
+            # self.DATA_ROOT_PATH = "/home/amax/data/val2017_tiny/"
             # self.DATA_ROOT_PATH = "/data/data_tune/"
             self.MODEL_PATH = self.DATA_ROOT_PATH + "model/"
         self.MODEL_NAME = "model.pkl"
