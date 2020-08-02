@@ -1,4 +1,5 @@
 import os
+import codecs
 import numpy as np
 import torch
 import torch.utils.data
@@ -15,8 +16,21 @@ from conf import config_general
 config = config_general()
 
 # --- dump ---
-def dump(config):
-    pass
+def dump(config, output_file=None):
+    dump_string = "-" * 15 + " dump begin " + "-" * 15 + "\n"
+    with open("./main.py", "rb") as f:
+        dump_string += f.read().decode() + "-" * 15 + " dump finished " + "-" * 15 + "\n\n" + "-" * 15 + " dump begin " + "-" * 15 + "\n"
+    with open("./network.py", "rb") as f:
+        dump_string += f.read().decode() + "-" * 15 + " dump finished " + "-" * 15 + "\n\n" + "-" * 15 + " dump conf  " + "-" * 15 + "\n"
+    for key in config.__dict__.keys():
+        dump_string += "  %s : %s\n" % (key, config.__dict__[key])
+    dump_string += "-" * 15 + " dump finished " + "-" * 15 + "\n\n"
+
+    if output_file is None:
+        print(dump_string)
+    else:
+        with codecs.open(output_file, "w", encoding="utf-8") as writer:
+            writer.write(dump_string)
 
 # ------------
 class Pipeline():
@@ -80,7 +94,7 @@ class Pipeline():
             test_loss = self.evaluate(mode="test", epoch=epoch)
             tprint("Loss: %.2f" % (test_loss / (step + 1)))
 
-            if step == 0:
+            if epoch == 0:
                 plt.imsave("./in.jpg", self.dataset_test.img_list[0, :3, :, :].permute(1, 2, 0).detach().cpu().numpy())
                 plt.imsave("./ground_truth.jpg", self.dataset_test.target_img_list[0, :, :, :].permute(1, 2, 0).detach().cpu().numpy())
             self.visualization("./out_epoch%s.jpg" % (epoch + 1), self.dataset_test.img_list[0, :, :, :].unsqueeze(0).to(config.device))

@@ -34,6 +34,8 @@ def augment(raw_data_path, generated_data_path, image_format, augment_time):
     for path in os.listdir(raw_data_path):
         if image_format in path:
             img = plt.imread(os.path.join(raw_data_path, path))
+            if len(img.shape) != 3:  # is a grep image.
+                continue
             img_list.extend(crop(img, size=(96, 96), augment_time=augment_time))
         else:
             print("Skip %s." % path)
@@ -59,6 +61,7 @@ def preprocess(raw_data_path, preprocessed_data_path, image_format="jpg"):
 
 
 def split_train_test(data_root_path):
+    # TODO: bug exists
     pos_num, neg_num = 4000, 1000
     files = os.listdir(data_root_path)
 
@@ -89,7 +92,7 @@ if __name__ == "__main__":
 
     augment_time = 10
 
-    split_train_test(root_path)
+    # split_train_test(root_path)
 
     augment(train_data, train_generated_data, image_format="jpg", augment_time=augment_time)
     preprocess(train_generated_data, train_preprocessed_data, image_format="jpg")
