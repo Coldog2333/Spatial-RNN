@@ -7,6 +7,7 @@ from utils import get_free_gpu
 
 class config_general():
     def __init__(self):
+        self.seed = 1234
         self.EPOCH = 100
         self.LEARNING_RATE = 1e-3
         self.WEIGHT_DECAY = 1e-5
@@ -36,12 +37,4 @@ class config_general():
             self.device_index = "-1"                                    # -1表示没有gpu device
 
     def update(self, args):
-        self.MODEL_NAME = args.name
-        self.EPOCH = args.epoch
-        self.device_index = args.device
-
-        self.DATA_ROOT_PATH = args.root
-        self.MODEL_PATH = self.DATA_ROOT_PATH + "model/"
-
-        self.BATCH_SIZE_TRAIN *= len(self.device_index.split(','))
-        self.BATCH_SIZE_TEST *= len(self.device_index.split(','))
+        pass
