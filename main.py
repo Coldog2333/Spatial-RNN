@@ -37,7 +37,7 @@ class Pipeline():
     def __init__(self, network_f, optimizer_f, loss_function_f, data_paths, config):
         self.traindata_path, self.testdata_path, self.devdata_path = data_paths
         self.network_f, self.optimizer_f, self.loss_function, self.config = network_f, optimizer_f, loss_function_f, config
-        self.set_random_seed()
+        # self.set_random_seed()
 
     def set_random_seed(self):
         np.random.seed(self.config.seed)
@@ -76,6 +76,10 @@ class Pipeline():
                 if config.device == "cuda":
                     img, target = [item.cuda() for item in (img, target)]
                 # print(img.shape)
+                for i in range(0, 12, 3):
+                    plt.imshow(img[0, i: i+3, :, :].permute(1, 2, 0).detach().cpu().numpy())
+                    plt.show()
+                exit(0)
                 new_img = self.network(img)
 
                 loss = self.loss_function(target.float(), new_img.float())
@@ -91,9 +95,12 @@ class Pipeline():
             Loss_Curve.append(losses)
 
             # test
-            test_loss = self.evaluate(mode="test", epoch=epoch)
+            test_loss = self.test(mode="test", epoch=epoch)
             tprint("Loss: %.2f" % (test_loss / (step + 1)))
 
+            # evaluate
+            psnr = self.evaluate()
+            tprint("PSNR: %.2f" % psnr)
             if epoch == 0:
                 plt.imsave("./in.jpg", self.dataset_test.img_list[0, :3, :, :].permute(1, 2, 0).detach().cpu().numpy())
                 plt.imsave("./ground_truth.jpg", self.dataset_test.target_img_list[0, :, :, :].permute(1, 2, 0).detach().cpu().numpy())
@@ -111,10 +118,10 @@ class Pipeline():
 
                 tprint("Save best model!\n")
 
-    def evaluate(self, mode="test", epoch=-1):
+    def test(self, mode="test", epoch=-1):
         self.network.eval()
         dataloader = self.dataloader_test if mode == "test" else self.dataloader_dev
-        eval_loss = 0
+        test_loss = 0
         for step, (img, target) in enumerate(dataloader):
             if config.device == "cuda":
                 img, target = [item.cuda() for item in (img, target)]
@@ -123,10 +130,33 @@ class Pipeline():
 
             loss = self.loss_function(target.float(), new_img.float())
 
-            eval_loss += loss.item()
+            test_loss += loss.item()
             tprint("Processed %.2f%% samples...\r" % (step / dataloader.__len__() * 100), end="")
-        return eval_loss
+        return test_loss
 
+    def evaluate(self):
+        """
+        + example:
+        >> pipeline = Pipeline()
+        >> pipeline.prepare_data()
+        >> pipeline.build_network()
+        >> pipeline.evaluate()
+        """
+        self.load_model()
+        self.network.eval()
+        psnr_list = []
+        for step, (img, target) in enumerate(self.dataloader_test):
+            if config.device == "cuda":
+                img, target = [item.cuda() for item in (img, target)]
+
+            new_img = self.network(img)
+
+            mse_loss = self.loss_function(target.float(), new_img.float()).item()
+            MAX_PIXEL = 1. if img[0, 0, 0, 0] > 1 else 255.
+            psnr_list.append(10 * np.log10(MAX_PIXEL / mse_loss))
+
+            tprint("Processed %.2f%% samples...\r" % (step / self.dataloader_test.__len__() * 100), end="")
+        return np.mean(psnr_list)
 
     def save_model(self):
         self.network.cpu()
