@@ -61,7 +61,7 @@ class Spatial_RNN(nn.Module):
         self.LRNN_in_conv = nn.Conv2d(in_channels=15, out_channels=16, kernel_size=(3, 3), padding=(1, 1))
         self.LRNN_out_conv = nn.Conv2d(in_channels=16, out_channels=3, kernel_size=(3, 3), padding=(1, 1))
 
-    def LRNN(self, X, P, direction):
+    def LRNN_operation(self, X, P, direction):
         # X: [-1, 16, 96, 96]
         # P: [-1, 16, 96, 96]
         batch_size = X.shape[0]
@@ -86,18 +86,23 @@ class Spatial_RNN(nn.Module):
         batch_H = torch.stack(batch_H, dim=0)
         return batch_H
 
+    def LRNN_layer(self, LRNN_input, feature_map):
+        directions = ["l2r", "r2l", "t2b", "b2t"]
+        LRNN_output = []
+        for i in range(4):
+            LRNN_output.append(
+                self.LRNN_operation(LRNN_input, feature_map[:, i * 16:(i + 1) * 16, :, :], direction=directions[i]))
+        LRNN_output = torch.stack(LRNN_output, dim=1)
+        LRNN_output = torch.max(LRNN_output, dim=1)[0]
+        return LRNN_output
+
     def forward(self, img):
         feature_map = torch.tanh(self.DCNN(img))
         LRNN_input = self.LRNN_in_conv(img)
 
-        directions = ["l2r", "r2l", "t2b", "b2t"]
-        LRNN_output = []
-        for i in range(4):
-            LRNN_output.append(self.LRNN(LRNN_input, feature_map[:, i*16:(i+1)*16, :, :], direction=directions[i]))
-        LRNN_output = torch.stack(LRNN_output, dim=1)
-        LRNN_output = torch.max(LRNN_output, dim=1)[0]
+        LRNN_output = self.LRNN_layer(LRNN_input, feature_map)
 
-        output = torch.sigmoid(self.LRNN_out_conv(LRNN_output))
+        output = torch.tanh(self.LRNN_out_conv(LRNN_output))
         return output
 
 
