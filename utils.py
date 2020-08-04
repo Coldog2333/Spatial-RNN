@@ -1,6 +1,8 @@
 import datetime
 import functools
 import os
+import numpy as np
+import torch
 
 
 def timestamp(func):
@@ -26,6 +28,15 @@ def timer(func):
 @timestamp
 def tprint(*args, **kwargs):
     print(*args, **kwargs)
+
+
+def get_batch_PSNR(batch_img, batch_ground_truth):
+    # batch_img: torch.tensor [-1, 3, height, width]
+    assert (len(batch_img.shape) == 4)
+    MAX_PIXEL = 1. if batch_img[0, 0, 0, 0] > 1 else 255.
+    mse = torch.mean((batch_img - batch_ground_truth) ** 2, dim=[1, 2, 3])
+    psnr = torch.mean(10 * torch.log10(MAX_PIXEL / mse))
+    return psnr
 
 
 def get_free_gpu():

@@ -9,7 +9,7 @@ import argparse
 
 from data_provider import cv_dataset
 from network import Spatial_RNN
-from utils import tprint
+from utils import tprint, get_batch_PSNR
 from conf import config_general
 
 # --- config ---
@@ -157,10 +157,8 @@ class Pipeline():
 
             new_img = self.network(img)
 
-            mse_loss = self.loss_function(target.float(), new_img.float()).item()
-            MAX_PIXEL = 1. if img[0, 0, 0, 0] > 1 else 255.
-            psnr_list.append(20 * np.log10(MAX_PIXEL / mse_loss))
-            print("[step %s]: %s" % (step + 1, 20 * np.log10(MAX_PIXEL / mse_loss)))
+            psnr_list.append(get_batch_PSNR(img.float(), new_img.float()))
+            print("[step %s]: %s\n" % (step + 1, get_batch_PSNR(img.float(), new_img.float())))
 
             tprint("Processed %.2f%% samples...\r" % (step / self.dataloader_test.__len__() * 100), end="")
         print("\n")
