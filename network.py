@@ -102,7 +102,7 @@ class Spatial_RNN(nn.Module):
 
         LRNN_output = self.LRNN_layer(LRNN_input, feature_map)
 
-        output = torch.tanh(self.LRNN_out_conv(LRNN_output))
+        output = torch.sigmoid(self.LRNN_out_conv(LRNN_output))
         return output
 
 
