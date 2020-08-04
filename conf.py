@@ -11,8 +11,8 @@ class config_general():
         self.EPOCH = 100
         self.LEARNING_RATE = 1e-3
         self.WEIGHT_DECAY = 1e-5
-        self.BATCH_SIZE_TRAIN = 10
-        self.BATCH_SIZE_TEST = 10
+        self.BATCH_SIZE_TRAIN = 50
+        self.BATCH_SIZE_TEST = 50
         self.HIDDEN_SIZE = 200
 
         if platform.system() == "Darwin":

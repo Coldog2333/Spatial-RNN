@@ -91,17 +91,17 @@ class Pipeline():
                 losses += loss.item()
                 tprint("Processed %.2f%% samples...\r" % (step / self.dataloader_train.__len__() * 100), end="")
             print("\n")
-            tprint("Loss: %.2f" % (losses / (step + 1)))
+            tprint("Train loss: %.2f" % (losses / (step + 1)))
             tprint("Processed 100% samples.")
             Loss_Curve.append(losses)
 
             # test
             test_loss = self.test(mode="test", epoch=epoch)
-            tprint("Loss: %.2f" % (test_loss / (step + 1)))
+            tprint("Test loss: %.2f" % (test_loss / (step + 1)))
 
             # evaluate
             psnr = self.evaluate()
-            tprint("PSNR: %.2f" % psnr)
+            tprint("Testset PSNR: %.2f" % psnr)
 
             if not os.path.exists("./visualization/"):
                 os.mkdir("./visualization/")
@@ -159,7 +159,8 @@ class Pipeline():
 
             mse_loss = self.loss_function(target.float(), new_img.float()).item()
             MAX_PIXEL = 1. if img[0, 0, 0, 0] > 1 else 255.
-            psnr_list.append(10 * np.log10(MAX_PIXEL / mse_loss))
+            psnr_list.append(20 * np.log10(MAX_PIXEL / mse_loss))
+            print("[step %s]: %s" % (step + 1, 20 * np.log10(MAX_PIXEL / mse_loss)))
 
             tprint("Processed %.2f%% samples...\r" % (step / self.dataloader_test.__len__() * 100), end="")
         print("\n")

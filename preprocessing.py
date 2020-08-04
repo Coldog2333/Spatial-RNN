@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 
 from conf import config_general
 
+
 def crop(img, size, augment_time=1):
     # img: numpy.array [height, width, 3]
     height, width, _ = img.shape
@@ -79,6 +80,20 @@ def split_train_test(data_root_path):
     print("Splitting done.")
 
 
+def generate_train_test_set(root_path, augment_time=10):
+    # split_train_test(root_path)
+    augment(train_data, train_generated_data, image_format="jpg", augment_time=augment_time)
+    preprocess(train_generated_data, train_preprocessed_data, image_format="jpg")
+
+    augment(test_data, test_generated_data, image_format="jpg", augment_time=augment_time)
+    preprocess(test_generated_data, test_preprocessed_data, image_format="jpg")
+
+
+def generate_inference_set(root_path):
+    pass
+
+
+
 if __name__ == "__main__":
     config = config_general()
 
@@ -90,12 +105,3 @@ if __name__ == "__main__":
     test_generated_data = root_path + "test_generated/"
     test_preprocessed_data = root_path + "test_preprocessed/"
 
-    augment_time = 10
-
-    # split_train_test(root_path)
-
-    augment(train_data, train_generated_data, image_format="jpg", augment_time=augment_time)
-    preprocess(train_generated_data, train_preprocessed_data, image_format="jpg")
-
-    augment(test_data, test_generated_data, image_format="jpg", augment_time=augment_time)
-    preprocess(test_generated_data, test_preprocessed_data, image_format="jpg")
