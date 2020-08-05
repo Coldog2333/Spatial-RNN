@@ -29,7 +29,7 @@ def load_img_from_dir(data_dir, image_format="jpg"):
         else:
             print("Skip %s." % path)
         count += 1
-        if count > 500:
+        if count > 100:
             break
     return img_list
 
@@ -83,9 +83,9 @@ class cv_dataset_inference(torch.utils.data.Dataset):
         return len(self.img_list)
 
     def __getitem__(self, idx):
-        torch_img = torch.Tensor(self.img_list[idx]).permute(2, 0, 1) / 255
+        torch_img = initialize_image(torch.Tensor(self.img_list[idx]).unsqueeze(0).permute(0, 3, 1, 2) / 255).squeeze()
         torch_target = torch.Tensor(self.target_img_list[idx]).permute(2, 0, 1) / 255
-        return initialize_image(torch_img), torch_target
+        return torch_img, torch_target
 
 
 if __name__ == "__main__":
