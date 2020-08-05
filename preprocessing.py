@@ -124,4 +124,4 @@ if __name__ == "__main__":
 
     root_path = config.DATA_ROOT_PATH
 
-    generate_inference_set(root_path)
+    # generate_inference_set(root_path)

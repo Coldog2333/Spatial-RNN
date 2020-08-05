@@ -7,7 +7,7 @@ import torch.nn.functional as F
 import matplotlib.pyplot as plt
 from multiprocessing import Pool, cpu_count
 
-from preprocessing import add_noise # for debug
+from preprocessing import add_noise  # for debug
 
 def initialize_image(img):
     # input: img: torch.tensor, (-1, 3, 96, 96)
@@ -15,24 +15,24 @@ def initialize_image(img):
     pooled_img = copy.deepcopy(img)
     for scalar in [2, 4, 8, 16]:
         pooled_img = F.avg_pool2d(pooled_img, kernel_size=(2, 2))
-        new_img = F.interpolate(pooled_img, scale_factor=scalar, mode="bilinear", align_corners=False, size=original_size)
+        new_img = F.interpolate(pooled_img, mode="bilinear", align_corners=False, size=original_size[-2:])
         img = torch.cat([img, new_img], dim=1)
     return img
 
 
 def load_img_from_dir(data_dir, image_format="jpg"):
     img_list = []
+    path_list = []
     count = 0
     for path in os.listdir(data_dir):
         if image_format in path:
             img = plt.imread(os.path.join(data_dir, path))
             img_list.append(img)
+            path_list.append(path)
         else:
             print("Skip %s." % path)
         count += 1
-        if count > 100:
-            break
-    return img_list
+    return img_list, path_list
 
 
 def plt_imread_batch(absolute_paths):
@@ -64,9 +64,9 @@ def load_img_from_dir_multiprocessing(data_dir, image_format="jpg"):
 
 class cv_dataset(torch.utils.data.Dataset):
     def __init__(self, data_dir, ground_truth_dir):
-        self.img_list = torch.Tensor(load_img_from_dir(data_dir)).permute(0, 3, 1, 2) / 255
+        self.img_list = torch.Tensor(load_img_from_dir(data_dir)[0]).permute(0, 3, 1, 2) / 255
         self.img_list = initialize_image(self.img_list)
-        self.target_img_list = torch.Tensor(load_img_from_dir(ground_truth_dir)).permute(0, 3, 1, 2) / 255
+        self.target_img_list = torch.Tensor(load_img_from_dir(ground_truth_dir)[0]).permute(0, 3, 1, 2) / 255
 
     def __len__(self):
         return self.img_list.shape[0]
@@ -77,8 +77,8 @@ class cv_dataset(torch.utils.data.Dataset):
 
 class cv_dataset_inference(torch.utils.data.Dataset):
     def __init__(self, data_dir, ground_truth_dir):
-        self.img_list = load_img_from_dir(data_dir)
-        self.target_img_list = load_img_from_dir(ground_truth_dir)
+        self.img_list, _ = load_img_from_dir(data_dir)
+        self.target_img_list, self.path_list = load_img_from_dir(ground_truth_dir)
 
     def __len__(self):
         return len(self.img_list)
@@ -86,7 +86,8 @@ class cv_dataset_inference(torch.utils.data.Dataset):
     def __getitem__(self, idx):
         torch_img = initialize_image(torch.Tensor(self.img_list[idx]).unsqueeze(0).permute(0, 3, 1, 2) / 255).squeeze()
         torch_target = torch.Tensor(self.target_img_list[idx]).permute(2, 0, 1) / 255
-        return torch_img, torch_target
+        path = self.path_list[idx]
+        return torch_img, torch_target, path
 
 
 if __name__ == "__main__":

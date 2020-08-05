@@ -38,16 +38,16 @@ class DeepCNN(torch.nn.Module):
 
         x5 = F.relu(self.conv5(x5))
 
-        x6 = F.interpolate(x5, scale_factor=2, mode="bilinear", align_corners=False)
+        x6 = F.interpolate(x5, mode="bilinear", align_corners=False, size=x4.shape[-2:])
         x6 = F.relu(self.conv6(torch.cat([x6, x4], dim=1)))
 
-        x7 = F.interpolate(x6, scale_factor=2, mode="bilinear", align_corners=False)
+        x7 = F.interpolate(x6, mode="bilinear", align_corners=False, size=x3.shape[-2:])
         x7 = F.relu(self.conv7(torch.cat([x7, x3], dim=1)))
 
-        x8 = F.interpolate(x7, scale_factor=2, mode="bilinear", align_corners=False)
+        x8 = F.interpolate(x7, mode="bilinear", align_corners=False, size=x2.shape[-2:])
         x8 = F.relu(self.conv8(torch.cat([x8, x2], dim=1)))
 
-        x9 = F.interpolate(x8, scale_factor=2, mode="bilinear", align_corners=False)
+        x9 = F.interpolate(x8, mode="bilinear", align_corners=False, size=x1.shape[-2:])
         x9 = F.relu(self.conv9(torch.cat([x9, x1], dim=1)))
 
         return x9

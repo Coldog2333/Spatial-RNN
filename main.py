@@ -104,18 +104,6 @@ class Pipeline():
             test_loss = self.test(mode="test", epoch=epoch)
             tprint("Test loss: %.2f" % (test_loss / (step + 1)))
 
-            # evaluate
-            psnr = self.evaluate()
-            tprint("Testset PSNR: %.2f" % psnr)
-
-            if not os.path.exists("./visualization/"):
-                os.mkdir("./visualization/")
-
-            if epoch == 0:
-                plt.imsave("./visualization/in.jpg", self.dataset_test.img_list[0, :3, :, :].permute(1, 2, 0).detach().cpu().numpy())
-                plt.imsave("./visualization/ground_truth.jpg", self.dataset_test.target_img_list[0, :, :, :].permute(1, 2, 0).detach().cpu().numpy())
-            self.visualization("./visualization/out_epoch%s.jpg" % (epoch + 1), self.dataset_test.img_list[0, :, :, :].unsqueeze(0).to(config.device))
-
             if test_loss < min_test_loss:
                 # save
                 min_test_loss = test_loss
@@ -127,6 +115,18 @@ class Pipeline():
                     self.network.cuda()
 
                 tprint("Save best model!\n")
+
+            # evaluate
+            psnr = self.evaluate()
+            tprint("Testset PSNR: %.2f" % psnr)
+
+            if not os.path.exists("./visualization/"):
+                os.mkdir("./visualization/")
+
+            if epoch == 0:
+                plt.imsave("./visualization/in.jpg", self.dataset_test.img_list[0, :3, :, :].permute(1, 2, 0).detach().cpu().numpy())
+                plt.imsave("./visualization/ground_truth.jpg", self.dataset_test.target_img_list[0, :, :, :].permute(1, 2, 0).detach().cpu().numpy())
+            self.visualization("./visualization/out_epoch%s.jpg" % (epoch + 1), self.dataset_test.img_list[0, :, :, :].unsqueeze(0).to(config.device))
 
     def test(self, mode="test", epoch=-1):
         self.network.eval()
@@ -156,11 +156,14 @@ class Pipeline():
         self.load_model()
         self.network.eval()
         psnr_list = []
-        for step, (img, target) in enumerate(self.dataloader_inference):
+        for step, (img, target, path) in enumerate(self.dataloader_inference):
             if config.device == "cuda":
                 img, target = [item.cuda() for item in (img, target)]
 
             new_img = self.network(img)
+
+            output_img = new_img.squeeze().permute(1, 2, 0).detach().cpu().numpy()
+            plt.imsave(os.path.join(self.config.DATA_ROOT_PATH, "inference_generated", path[0]), output_img)
 
             psnr_list.append(get_batch_PSNR(target.float(), new_img.float()))
 
