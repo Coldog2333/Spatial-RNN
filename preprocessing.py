@@ -99,9 +99,13 @@ def generate_inference_set(root_path):
     image_format = "jpg"
     data_path = root_path + "test/"
     inference_preprocessed_data = root_path + "inference_preprocessed/"
+    inference_generated_data = root_path + "inference_generated/"
 
     if not os.path.exists(inference_preprocessed_data):
         os.mkdir(inference_preprocessed_data)
+
+    if not os.path.exists(inference_generated_data):
+        os.mkdir(inference_generated_data)
 
     for file in os.listdir(data_path):
         if image_format in file:

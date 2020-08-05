@@ -54,13 +54,13 @@ class Pipeline():
                                       ground_truth_dir=self.testdata_path["ground_truth"])
         self.dataset_dev = None
 
-        # self.dataset_inference = cv_dataset(data_dir=self.inferenecedata_path["input"],
-        #                               ground_truth_dir=self.inferenecedata_path["ground_truth"])
+        self.dataset_inference = cv_dataset(data_dir=self.inferenecedata_path["input"],
+                                      ground_truth_dir=self.inferenecedata_path["ground_truth"])
 
         self.dataloader_train = torch.utils.data.DataLoader(dataset=self.dataset_train, batch_size=config.BATCH_SIZE_TRAIN, shuffle=True)
         self.dataloader_test = torch.utils.data.DataLoader(dataset=self.dataset_test, batch_size=config.BATCH_SIZE_TEST, shuffle=True)
         self.dataloader_dev = None
-        # self.dataloader_inference = torch.utils.data.DataLoader(dataset=self.dataset_inference, batch_size=config.BATCH_SIZE_TEST, shuffle=False)
+        self.dataloader_inference = torch.utils.data.DataLoader(dataset=self.dataset_inference, batch_size=1, shuffle=False)
 
         print("DataSet size: %s, %s" % (self.dataloader_train.__len__(), self.dataloader_test.__len__()))
 
@@ -157,16 +157,15 @@ class Pipeline():
         self.load_model()
         self.network.eval()
         psnr_list = []
-        for step, (img, target) in enumerate(self.dataloader_test):
+        for step, (img, target) in enumerate(self.dataloader_inference):
             if config.device == "cuda":
                 img, target = [item.cuda() for item in (img, target)]
 
             new_img = self.network(img)
 
             psnr_list.append(get_batch_PSNR(target.float(), new_img.float()))
-            print("[step %s]: %s\n" % (step + 1, get_batch_PSNR(target.float(), new_img.float())))
 
-            tprint("Processed %.2f%% samples...\r" % (self.config.BATCH_SIZE_TEST / self.dataloader_test.__len__() * 100), end="")
+            tprint("Processed %.2f%% samples...\r" % (self.config.BATCH_SIZE_TEST / self.dataloader_inference.__len__() * 100), end="")
         print("\n")
         return np.mean(psnr_list)
 

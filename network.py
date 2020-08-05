@@ -68,26 +68,42 @@ class Spatial_RNN(nn.Module):
         n = X.shape[2] if "l" in direction else X.shape[3]
         m = X.shape[3] if "l" in direction else X.shape[2]
         batch_H = []
-        h = torch.zeros(size=(16, n)).to(self.config.device)
-        for i in range(batch_size):
-            H = []
-            for k in range(m):
-                if direction == "l2r":
-                    h = (1 - P[i, :, :, k]) * X[i, :, :, k] + P[i, :, :, k] * h
-                elif direction == "r2l":
-                    h = (1 - P[i, :, :, m - k - 1]) * X[i, :, :, m - k - 1] + P[i, :, :, m - k - 1] * h
-                elif direction == "t2b":
-                    h = (1 - P[i, :, k, :]) * X[i, :, k, :] + P[i, :, k, :] * h
-                elif direction == "b2t":
-                    h = (1 - P[i, :, m - k - 1, :]) * X[i, :, m - k - 1, :] + P[i, :, m - k - 1, :] * h
-                else:
-                    raise AssertionError("Unknown direction: %s." % direction)
-                H.append(h)
-            if "l" in direction:
-                batch_H.append(torch.stack(H, dim=2))
+        h = torch.zeros(size=(batch_size, 16, n)).to(self.config.device)
+        for k in range(m):
+            if direction == "l2r":
+                h = (1 - P[:, :, :, k]) * X[:, :, :, k] + P[:, :, :, k] * h
+            elif direction == "r2l":
+                h = (1 - P[:, :, :, m - k - 1]) * X[:, :, :, m - k - 1] + P[:, :, :, m - k - 1] * h
+            elif direction == "t2b":
+                h = (1 - P[:, :, k, :]) * X[:, :, k, :] + P[:, :, k, :] * h
+            elif direction == "b2t":
+                h = (1 - P[:, :, m - k - 1, :]) * X[:, :, m - k - 1, :] + P[:, :, m - k - 1, :] * h
             else:
-                batch_H.append(torch.stack(H, dim=1))
-        batch_H = torch.stack(batch_H, dim=0)
+                raise AssertionError("Unknown direction: %s." % direction)
+            batch_H.append(h)
+        if "l" in direction:
+            batch_H = torch.stack(batch_H, dim=3)
+        else:
+            batch_H = torch.stack(batch_H, dim=2)
+
+        # for i in range(batch_size):
+        #     H = []
+        #     for k in range(m):
+        #         if direction == "l2r":
+        #             h = (1 - P[i, :, :, k]) * X[i, :, :, k] + P[i, :, :, k] * h
+        #         elif direction == "r2l":
+        #             h = (1 - P[i, :, :, m - k - 1]) * X[i, :, :, m - k - 1] + P[i, :, :, m - k - 1] * h
+        #         elif direction == "t2b":
+        #             h = (1 - P[i, :, k, :]) * X[i, :, k, :] + P[i, :, k, :] * h
+        #         elif direction == "b2t":
+        #             h = (1 - P[i, :, m - k - 1, :]) * X[i, :, m - k - 1, :] + P[i, :, m - k - 1, :] * h
+        #         else:
+        #             raise AssertionError("Unknown direction: %s." % direction)
+        #         H.append(h)
+        #     if "l" in direction:
+        #         batch_H.append(torch.stack(H, dim=2))
+        #     else:
+        #         batch_H.append(torch.stack(H, dim=1))
         return batch_H
 
     def LRNN_layer(self, LRNN_input, feature_map):
