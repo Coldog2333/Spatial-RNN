@@ -7,7 +7,7 @@ import torch.nn.functional
 import matplotlib.pyplot as plt
 import argparse
 
-from data_provider import cv_dataset
+from data_provider import cv_dataset, cv_dataset_inference
 from network import Spatial_RNN
 from utils import tprint, get_batch_PSNR
 from conf import config_general
@@ -54,7 +54,7 @@ class Pipeline():
                                       ground_truth_dir=self.testdata_path["ground_truth"])
         self.dataset_dev = None
 
-        self.dataset_inference = cv_dataset(data_dir=self.inferenecedata_path["input"],
+        self.dataset_inference = cv_dataset_inference(data_dir=self.inferenecedata_path["input"],
                                       ground_truth_dir=self.inferenecedata_path["ground_truth"])
 
         self.dataloader_train = torch.utils.data.DataLoader(dataset=self.dataset_train, batch_size=config.BATCH_SIZE_TRAIN, shuffle=True)
