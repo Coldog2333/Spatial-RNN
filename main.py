@@ -53,7 +53,6 @@ class Pipeline():
         self.dataset_test = cv_dataset(data_dir=self.testdata_path["input"],
                                       ground_truth_dir=self.testdata_path["ground_truth"])
         self.dataset_dev = None
-
         self.dataset_inference = cv_dataset_inference(data_dir=self.inferenecedata_path["input"],
                                       ground_truth_dir=self.inferenecedata_path["ground_truth"])
 
@@ -95,7 +94,7 @@ class Pipeline():
                 self.optimizer.step()
 
                 losses += loss.item()
-                tprint("Processed %.2f%% samples...\r" % (self.config.BATCH_SIZE_TRAIN / self.dataloader_train.__len__() * 100), end="")
+                tprint("Processed %.2f%% samples...\r" % (step / self.dataloader_train.__len__() * 100), end="")
             print("\n")
             tprint("Train loss: %.2f" % (losses / (step + 1)))
             tprint("Processed 100% samples.")
@@ -142,7 +141,7 @@ class Pipeline():
             loss = self.loss_function(target.float(), new_img.float())
 
             test_loss += loss.item()
-            tprint("Processed %.2f%% samples...\r" % (self.config.BATCH_SIZE_TEST / dataloader.__len__() * 100), end="")
+            tprint("Processed %.2f%% samples...\r" % (step / dataloader.__len__() * 100), end="")
         print("\n")
         return test_loss
 
@@ -165,7 +164,7 @@ class Pipeline():
 
             psnr_list.append(get_batch_PSNR(target.float(), new_img.float()))
 
-            tprint("Processed %.2f%% samples...\r" % (self.config.BATCH_SIZE_TEST / self.dataloader_inference.__len__() * 100), end="")
+            tprint("Processed %.2f%% samples...\r" % (step / self.dataloader_inference.__len__() * 100), end="")
         print("\n")
         return np.mean(psnr_list)
 
