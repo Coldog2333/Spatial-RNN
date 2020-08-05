@@ -59,9 +59,9 @@ def load_img_from_dir_multiprocessing(data_dir, image_format="jpg"):
 
 class cv_dataset(torch.utils.data.Dataset):
     def __init__(self, data_dir, ground_truth_dir):
-        self.img_list = torch.Tensor(load_img_from_dir_multiprocessing(data_dir)).permute(0, 3, 1, 2) / 255
+        self.img_list = torch.Tensor(load_img_from_dir(data_dir)).permute(0, 3, 1, 2) / 255
         self.img_list = initialize_image(self.img_list)
-        self.target_img_list = torch.Tensor(load_img_from_dir_multiprocessing(ground_truth_dir)).permute(0, 3, 1, 2) / 255
+        self.target_img_list = torch.Tensor(load_img_from_dir(ground_truth_dir)).permute(0, 3, 1, 2) / 255
 
     def __len__(self):
         return self.img_list.shape[0]
@@ -72,8 +72,8 @@ class cv_dataset(torch.utils.data.Dataset):
 
 class cv_dataset_inference(torch.utils.data.Dataset):
     def __init__(self, data_dir, ground_truth_dir):
-        self.img_list = load_img_from_dir_multiprocessing(data_dir)
-        self.target_img_list = load_img_from_dir_multiprocessing(ground_truth_dir)
+        self.img_list = load_img_from_dir(data_dir)
+        self.target_img_list = load_img_from_dir(ground_truth_dir)
 
     def __len__(self):
         return len(self.img_list)
