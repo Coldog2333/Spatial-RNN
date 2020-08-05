@@ -83,9 +83,8 @@ class cv_dataset_inference(torch.utils.data.Dataset):
         return len(self.img_list)
 
     def __getitem__(self, idx):
-        print(torch.Tensor(self.img_list[idx]).shape, torch.Tensor(self.target_img_list[idx]).shape)
-        torch_img = torch.Tensor(self.img_list[idx]).unsqueeze(0).permute(0, 3, 1, 2) / 255
-        torch_target = torch.Tensor(self.target_img_list[idx]).unsqueeze(0).permute(0, 3, 1, 2) / 255
+        torch_img = torch.Tensor(self.img_list[idx]).permute(2, 0, 1) / 255
+        torch_target = torch.Tensor(self.target_img_list[idx]).permute(2, 0, 1) / 255
         return initialize_image(torch_img), torch_target
 
 
