@@ -30,7 +30,8 @@ git clone https://github.com/Coldog2333/Spatial-RNN.git
 ### Download tiny MSCOCO dataset (1% of MSCOCO)
 You would like to have a quick start to understand how Spatial-RNN does.
 Then you can download the tiny MSCOCO dataset and have a try. 
-The tiny MSCOCO dataset is chosen randomly from the origin MSCOCO 2017 dev dataset.
+The tiny MSCOCO dataset is chosen randomly from 
+the origin [MSCOCO 2017 dev dataset](http://images.cocodataset.org/zips/val2017.zip).
 
 ### Preprocessing
 

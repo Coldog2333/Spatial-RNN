@@ -110,6 +110,8 @@ def generate_inference_set(root_path):
     for file in os.listdir(data_path):
         if image_format in file:
             img = plt.imread(os.path.join(data_path, file))
+            if len(img.shape) != 3:  # is a grep image.
+                continue
             plt.imsave(os.path.join(inference_preprocessed_data, file), add_noise(img))
         else:
             print("Skip %s." % file)
