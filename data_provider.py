@@ -11,10 +11,11 @@ from preprocessing import add_noise # for debug
 
 def initialize_image(img):
     # input: img: torch.tensor, (-1, 3, 96, 96)
+    original_size = img.shape
     pooled_img = copy.deepcopy(img)
     for scalar in [2, 4, 8, 16]:
         pooled_img = F.avg_pool2d(pooled_img, kernel_size=(2, 2))
-        new_img = F.interpolate(pooled_img, scale_factor=scalar, mode="bilinear", align_corners=False)
+        new_img = F.interpolate(pooled_img, scale_factor=scalar, mode="bilinear", align_corners=False, size=original_size)
         img = torch.cat([img, new_img], dim=1)
     return img
 
