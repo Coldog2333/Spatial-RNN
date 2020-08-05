@@ -65,24 +65,28 @@ class Spatial_RNN(nn.Module):
         # X: [-1, 16, 96, 96]
         # P: [-1, 16, 96, 96]
         batch_size = X.shape[0]
-        n = X.shape[2]
+        n = X.shape[2] if "l" in direction else X.shape[3]
+        m = X.shape[3] if "l" in direction else X.shape[2]
         batch_H = []
-        h = torch.zeros(size=(16, 96)).to(self.config.device)
+        h = torch.zeros(size=(16, n)).to(self.config.device)
         for i in range(batch_size):
             H = []
-            for k in range(n):
+            for k in range(m):
                 if direction == "l2r":
                     h = (1 - P[i, :, :, k]) * X[i, :, :, k] + P[i, :, :, k] * h
                 elif direction == "r2l":
-                    h = (1 - P[i, :, :, n - k - 1]) * X[i, :, :, n - k - 1] + P[i, :, :, n - k - 1] * h
+                    h = (1 - P[i, :, :, m - k - 1]) * X[i, :, :, m - k - 1] + P[i, :, :, m - k - 1] * h
                 elif direction == "t2b":
                     h = (1 - P[i, :, k, :]) * X[i, :, k, :] + P[i, :, k, :] * h
                 elif direction == "b2t":
-                    h = (1 - P[i, :, n - k - 1, :]) * X[i, :, n - k - 1, :] + P[i, :, n - k - 1, :] * h
+                    h = (1 - P[i, :, m - k - 1, :]) * X[i, :, m - k - 1, :] + P[i, :, m - k - 1, :] * h
                 else:
                     raise AssertionError("Unknown direction: %s." % direction)
                 H.append(h)
-            batch_H.append(torch.stack(H, dim=1))
+            if "l" in direction:
+                batch_H.append(torch.stack(H, dim=2))
+            else:
+                batch_H.append(torch.stack(H, dim=1))
         batch_H = torch.stack(batch_H, dim=0)
         return batch_H
 
@@ -109,7 +113,7 @@ class Spatial_RNN(nn.Module):
 if __name__ == "__main__":
     config = config_general()
     net = DeepCNN()
-    fake_img = torch.rand((2, 15, 96, 96))
+    fake_img = torch.rand((2, 15, 128, 256))
     dcnn_out = net(fake_img)
     # print(dcnn_out.shape)
 

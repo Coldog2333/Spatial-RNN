@@ -71,7 +71,6 @@ def split_train_test(data_root_path):
     if not os.path.exists(os.path.join(data_root_path, "test")):
         os.mkdir(os.path.join(data_root_path, "test"))
 
-    i = 0
     for i in range(pos_num + neg_num):
         if i < pos_num:
             shutil.move(os.path.join(data_root_path, files[i]), os.path.join(data_root_path, "train", files[i]))
@@ -82,6 +81,13 @@ def split_train_test(data_root_path):
 
 def generate_train_test_set(root_path, augment_time=10):
     # split_train_test(root_path)
+    train_data = root_path + "train/"
+    train_generated_data = root_path + "train_generated/"
+    train_preprocessed_data = root_path + "train_preprocessed/"
+    test_data = root_path + "test/"
+    test_generated_data = root_path + "test_generated/"
+    test_preprocessed_data = root_path + "test_preprocessed/"
+
     augment(train_data, train_generated_data, image_format="jpg", augment_time=augment_time)
     preprocess(train_generated_data, train_preprocessed_data, image_format="jpg")
 
@@ -90,18 +96,26 @@ def generate_train_test_set(root_path, augment_time=10):
 
 
 def generate_inference_set(root_path):
-    pass
+    image_format = "jpg"
+    data_path = root_path + "test/"
+    inference_preprocessed_data = root_path + "inference_preprocessed/"
 
+    if not os.path.exists(inference_preprocessed_data):
+        os.mkdir(inference_preprocessed_data)
+
+    for file in os.listdir(data_path):
+        if image_format in file:
+            img = plt.imread(os.path.join(data_path, file))
+            plt.imsave(os.path.join(inference_preprocessed_data, file), add_noise(img))
+        else:
+            print("Skip %s." % file)
+
+    print("Done")
 
 
 if __name__ == "__main__":
     config = config_general()
 
     root_path = config.DATA_ROOT_PATH
-    train_data = root_path + "train/"
-    train_generated_data = root_path + "train_generated/"
-    train_preprocessed_data = root_path + "train_preprocessed/"
-    test_data = root_path + "test/"
-    test_generated_data = root_path + "test_generated/"
-    test_preprocessed_data = root_path + "test_preprocessed/"
 
+    generate_inference_set(root_path)

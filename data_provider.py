@@ -28,8 +28,6 @@ def load_img_from_dir(data_dir, image_format="jpg"):
         else:
             print("Skip %s." % path)
         count += 1
-        if count >= 100:
-            break
     return img_list
 
 

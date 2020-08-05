@@ -35,7 +35,7 @@ def dump(config, output_file=None):
 # ------------
 class Pipeline():
     def __init__(self, network_f, optimizer_f, loss_function_f, data_paths, config):
-        self.traindata_path, self.testdata_path, self.devdata_path = data_paths
+        self.traindata_path, self.testdata_path, self.devdata_path, self.inferenecedata_path = data_paths
         self.network_f, self.optimizer_f, self.loss_function, self.config = network_f, optimizer_f, loss_function_f, config
         # self.set_random_seed()
 
@@ -54,9 +54,13 @@ class Pipeline():
                                       ground_truth_dir=self.testdata_path["ground_truth"])
         self.dataset_dev = None
 
+        # self.dataset_inference = cv_dataset(data_dir=self.inferenecedata_path["input"],
+        #                               ground_truth_dir=self.inferenecedata_path["ground_truth"])
+
         self.dataloader_train = torch.utils.data.DataLoader(dataset=self.dataset_train, batch_size=config.BATCH_SIZE_TRAIN, shuffle=True)
         self.dataloader_test = torch.utils.data.DataLoader(dataset=self.dataset_test, batch_size=config.BATCH_SIZE_TEST, shuffle=True)
         self.dataloader_dev = None
+        # self.dataloader_inference = torch.utils.data.DataLoader(dataset=self.dataset_inference, batch_size=config.BATCH_SIZE_TEST, shuffle=False)
 
         print("DataSet size: %s, %s" % (self.dataloader_train.__len__(), self.dataloader_test.__len__()))
 
@@ -202,6 +206,8 @@ if __name__ == "__main__":
     testdata_path = {"input": os.path.join(config.DATA_ROOT_PATH, "test_preprocessed/"),
                       "ground_truth": os.path.join(config.DATA_ROOT_PATH, "test_generated/")}
     devdata_path = "yes"
+    inferencedata_path = {"input": os.path.join(config.DATA_ROOT_PATH, "inference_preprocessed/"),
+                      "ground_truth": os.path.join(config.DATA_ROOT_PATH, "test/")}
 
     dump(config)
 
@@ -209,7 +215,7 @@ if __name__ == "__main__":
                             optimizer_f=torch.optim.Adam,
                             loss_function_f=torch.nn.MSELoss(),
                             # loss_function_f=Distance_penalized_loss(config),
-                            data_paths=[traindata_path, testdata_path, devdata_path],
+                            data_paths=[traindata_path, testdata_path, devdata_path, inferencedata_path],
                             config=config)
 
     pipeline.prepare_data()
