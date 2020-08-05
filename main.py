@@ -58,6 +58,8 @@ class Pipeline():
         self.dataloader_test = torch.utils.data.DataLoader(dataset=self.dataset_test, batch_size=config.BATCH_SIZE_TEST, shuffle=True)
         self.dataloader_dev = None
 
+        print("DataSet size: %s, %s" % (self.dataloader_train.__len__(), self.dataloader_test.__len__()))
+
     def build_network(self):
         self.network = self.network_f(self.config).to(self.config.device)
         print(self.network)
@@ -89,7 +91,7 @@ class Pipeline():
                 self.optimizer.step()
 
                 losses += loss.item()
-                tprint("Processed %.2f%% samples...\r" % (step / self.dataloader_train.__len__() * 100), end="")
+                tprint("Processed %.2f%% samples...\r" % (self.config.BATCH_SIZE_TRAIN / self.dataloader_train.__len__() * 100), end="")
             print("\n")
             tprint("Train loss: %.2f" % (losses / (step + 1)))
             tprint("Processed 100% samples.")
@@ -136,7 +138,7 @@ class Pipeline():
             loss = self.loss_function(target.float(), new_img.float())
 
             test_loss += loss.item()
-            tprint("Processed %.2f%% samples...\r" % (step / dataloader.__len__() * 100), end="")
+            tprint("Processed %.2f%% samples...\r" % (self.config.BATCH_SIZE_TEST / dataloader.__len__() * 100), end="")
         print("\n")
         return test_loss
 
@@ -157,10 +159,10 @@ class Pipeline():
 
             new_img = self.network(img)
 
-            psnr_list.append(get_batch_PSNR(img.float(), new_img.float()))
-            print("[step %s]: %s\n" % (step + 1, get_batch_PSNR(img.float(), new_img.float())))
+            psnr_list.append(get_batch_PSNR(target.float(), new_img.float()))
+            print("[step %s]: %s\n" % (step + 1, get_batch_PSNR(target.float(), new_img.float())))
 
-            tprint("Processed %.2f%% samples...\r" % (step / self.dataloader_test.__len__() * 100), end="")
+            tprint("Processed %.2f%% samples...\r" % (self.config.BATCH_SIZE_TEST / self.dataloader_test.__len__() * 100), end="")
         print("\n")
         return np.mean(psnr_list)
 

@@ -36,7 +36,7 @@ def get_batch_PSNR(batch_img, batch_ground_truth):
     MAX_PIXEL = 1. if batch_img[0, 0, 0, 0] > 1 else 255.
     mse = torch.mean((batch_img - batch_ground_truth) ** 2, dim=[1, 2, 3])
     psnr = torch.mean(10 * torch.log10(MAX_PIXEL / mse))
-    return psnr
+    return psnr.detach().cpu().numpy()
 
 
 def get_free_gpu():
