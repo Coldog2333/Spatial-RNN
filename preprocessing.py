@@ -1,4 +1,5 @@
 import os
+import argparse
 import numpy as np
 import torch
 import shutil
@@ -122,6 +123,15 @@ def generate_inference_set(root_path):
 if __name__ == "__main__":
     config = config_general()
 
-    root_path = config.DATA_ROOT_PATH
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-c", "--command", default="generate_train_test_set", type=str, help="generate_train_test_set/generate_inference_set")
+    parser.add_argument("-a", "--augment", default=10, type=int, help="Augment time. [default: 10]")
+    parser.add_argument("-r", "--root_path", default=config.DATA_ROOT_PATH, type=str, help="root path")
+    args = parser.parse_args()
 
-    # generate_inference_set(root_path)
+    if args.command == "generate_train_test_set":
+        generate_train_test_set(root_path=args.root_path, augment_time=args.augment)
+    elif args.command == "generate_inference_set":
+        generate_inference_set(root_path=args.root_path)
+    else:
+        raise NameError("Unknown command. Valid commands include [generate_train_test_set], [generate_inference_set]")

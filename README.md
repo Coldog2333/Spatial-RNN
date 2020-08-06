@@ -4,7 +4,7 @@ It is the repository of pytorch implementation of the ECCV 2016 paper:
 Learning Recursive Filters for Low-Level Vision via a Hybrid Neural Network.
 
 The official implementation (Caffe version) can be accessed from 
-[here](https://github.com/Liusifei/caffe-lowlevel)
+[here](https://github.com/Liusifei/caffe-lowlevel).
 
 ## Prerequisites
 ### PyTorch
@@ -33,7 +33,22 @@ Then you can download the tiny MSCOCO dataset and have a try.
 The tiny MSCOCO dataset is chosen randomly from 
 the origin [MSCOCO 2017 dev dataset](http://images.cocodataset.org/zips/val2017.zip).
 
+You can download the tiny-MSCOCO from [here](http://coldog.cn/dataset/tiny-MSCOCO.zip) and unzip the data.
+Or you can just simply run the shell script like
+
+```shell script
+sh download_dataset.sh
+```
+
 ### Preprocessing
+After downloading and unziping the dataset, you should do some preprocessing to generate the data for training and testing.
+
+Here provided a preprocessing script for generate 96x96 image patches as the paper suggested.
+And it can also generate the corresponding patches with white Gaussian noise.
+
+```shell script
+python3 preprocessing.py --command generate_train_test_set --augment 10
+```
 
 ## Train
 ```shell script
