@@ -27,19 +27,22 @@ def load_img_from_dir(data_dir, image_format="jpg"):
     for path in os.listdir(data_dir):
         if image_format in path:
             img = plt.imread(os.path.join(data_dir, path))
-
-            # pad some images with odd size.
-            width, height, _ = img.shape
-            if width % 2 != 0:
-                img = np.pad(img, ((0, 1), (0, 0), (0, 0)))
-            if height % 2 != 0:
-                img = np.pad(img, ((0, 0), (0, 1), (0, 0)))
+            if len(img.shape) < 3:
+                continue
+            # # pad some images with odd size.
+            # width, height, _ = img.shape
+            # if width % 2 != 0:
+            #     img = img[:width-1, :, :]
+            # if height % 2 != 0:
+            #     img = img[:width-1, :, :]
 
             img_list.append(img)
             path_list.append(path)
         else:
             print("Skip %s." % path)
         count += 1
+        if count > 500:
+            break
     return img_list, path_list
 
 

@@ -138,7 +138,7 @@ class Spatial_RNN(nn.Module):
 if __name__ == "__main__":
     config = config_general()
     net = DeepCNN()
-    fake_img = torch.rand((2, 15, 128, 256))
+    fake_img = torch.rand((1, 15, 126, 255))
     dcnn_out = net(fake_img)
     # print(dcnn_out.shape)
 

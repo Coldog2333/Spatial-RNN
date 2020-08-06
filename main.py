@@ -155,6 +155,7 @@ class Pipeline():
         """
         self.load_model()
         self.network.eval()
+        error_count = 0
         psnr_list = []
         for step, (img, target, path) in enumerate(self.dataloader_inference):
             if config.device == "cuda":
@@ -165,9 +166,13 @@ class Pipeline():
             output_img = new_img.squeeze().permute(1, 2, 0).detach().cpu().numpy()
             plt.imsave(os.path.join(self.config.DATA_ROOT_PATH, "inference_generated", path[0]), output_img)
 
+            if target.shape != new_img.shape:
+                error_count += 1
+                continue
             psnr_list.append(get_batch_PSNR(target.float(), new_img.float()))
 
             tprint("Processed %.2f%% samples...\r" % (step / self.dataloader_inference.__len__() * 100), end="")
+        print("error: %s" % error_count)
         print("\n")
         return np.mean(psnr_list)
 
