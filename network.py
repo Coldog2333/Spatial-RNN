@@ -48,7 +48,7 @@ class DeepCNN(torch.nn.Module):
         x8 = F.relu(self.conv8(torch.cat([x8, x2], dim=1)))
 
         x9 = F.interpolate(x8, mode="bilinear", align_corners=False, size=x1.shape[-2:])
-        x9 = F.relu(self.conv9(torch.cat([x9, x1], dim=1)))
+        x9 = self.conv9(torch.cat([x9, x1], dim=1))
 
         return x9
 
@@ -109,9 +109,18 @@ class Spatial_RNN(nn.Module):
     def LRNN_layer(self, LRNN_input, feature_map):
         directions = ["l2r", "r2l", "t2b", "b2t"]
         LRNN_output = []
-        for i in range(4):
-            LRNN_output.append(
-                self.LRNN_operation(LRNN_input, feature_map[:, i * 16:(i + 1) * 16, :, :], direction=directions[i]))
+
+        # 2nd-order
+        LRNN_output.append(self.LRNN_operation(LRNN_input, feature_map[:,  0:16, :, :], direction="l2r"))
+        LRNN_output.append(self.LRNN_operation(LRNN_input, feature_map[:,  0:16, :, :], direction="r2l"))
+        LRNN_output.append(self.LRNN_operation(LRNN_input, feature_map[:, 16:32, :, :], direction="t2b"))
+        LRNN_output.append(self.LRNN_operation(LRNN_input, feature_map[:, 16:32, :, :], direction="b2t"))
+
+        LRNN_output.append(self.LRNN_operation(LRNN_input, feature_map[:, 32:48, :, :], direction="l2r"))
+        LRNN_output.append(self.LRNN_operation(LRNN_input, feature_map[:, 32:48, :, :], direction="r2l"))
+        LRNN_output.append(self.LRNN_operation(LRNN_input, feature_map[:, 48:64, :, :], direction="t2b"))
+        LRNN_output.append(self.LRNN_operation(LRNN_input, feature_map[:, 48:64, :, :], direction="b2t"))
+
         LRNN_output = torch.stack(LRNN_output, dim=1)
         LRNN_output = torch.max(LRNN_output, dim=1)[0]
         return LRNN_output

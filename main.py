@@ -96,13 +96,13 @@ class Pipeline():
                 losses += loss.item()
                 tprint("Processed %.2f%% samples...\r" % (step / self.dataloader_train.__len__() * 100), end="")
             print("\n")
-            tprint("Train loss: %.2f" % (losses / (step + 1)))
+            tprint("Train loss: %f" % (losses / (step + 1)))
             tprint("Processed 100% samples.")
             Loss_Curve.append(losses)
 
             # test
             test_loss = self.test(mode="test", epoch=epoch)
-            tprint("Test loss: %.2f" % (test_loss / (step + 1)))
+            tprint("Test loss: %f" % (test_loss / (step + 1)))
 
             if test_loss < min_test_loss:
                 # save
