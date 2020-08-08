@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from multiprocessing import Pool, cpu_count
 
 from preprocessing import add_noise  # for debug
+from conf import config_general
 
 def initialize_image(img):
     # input: img: torch.tensor, (-1, 3, 96, 96)
@@ -41,7 +42,7 @@ def load_img_from_dir(data_dir, image_format="jpg"):
         else:
             print("Skip %s." % path)
         count += 1
-        if count > 500:
+        if count > 10:
             break
     return img_list, path_list
 
@@ -102,16 +103,13 @@ class cv_dataset_inference(torch.utils.data.Dataset):
 
 
 if __name__ == "__main__":
-    img_path = "./data/im1.png"
-    img = plt.imread(img_path)
-    # img = torch.Tensor(img).permute(2, 0, 1).unsqueeze(0)
+    config = config_general()
+    dataset_inference = cv_dataset_inference(data_dir=os.path.join(config.DATA_ROOT_PATH, "inference_preprocessed/"),
+                                                  ground_truth_dir=os.path.join(config.DATA_ROOT_PATH, "test/"))
 
-    # fake_img = torch.rand((5, 3, 96, 96))
-    # print(initialize_image(img).shape)
-    plt.imshow(img)
-    plt.show()
-    img = add_noise(img)
-    plt.imshow(img)
-    plt.show()
+    dataloader_inference = torch.utils.data.DataLoader(dataset=dataset_inference, batch_size=1, shuffle=False)
 
-    # dataset = train_dataset("./generated_data")
+    for step, (img, target, path) in enumerate(dataloader_inference):
+        plt.imshow(target[0, :3, :, :].squeeze().permute(1, 2, 0).detach().cpu().numpy())
+        plt.title(path[0])
+        plt.show()

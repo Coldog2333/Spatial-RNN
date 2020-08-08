@@ -64,7 +64,7 @@ class Spatial_RNN(nn.Module):
     def LRNN_operation(self, X, P, direction):
         # X: [-1, 16, 96, 96]
         # P: [-1, 16, 96, 96]
-        batch_size = X.shape[0]
+        batch_size, feat_n = X.shape[0], X.shape[1]
         n = X.shape[2] if "l" in direction else X.shape[3]
         m = X.shape[3] if "l" in direction else X.shape[2]
         batch_H = []
@@ -139,8 +139,13 @@ if __name__ == "__main__":
     config = config_general()
     net = DeepCNN()
     fake_img = torch.rand((1, 15, 126, 255))
-    dcnn_out = net(fake_img)
+    # dcnn_out = net(fake_img)
     # print(dcnn_out.shape)
 
     spatial_rnn = Spatial_RNN(config=config)
-    print(spatial_rnn(fake_img).shape)
+    # print(spatial_rnn(fake_img).shape)
+
+    P = torch.tensor([[[[-0.8, -0.7, 0.6], [0.7, 0.6, -0.1]]]])
+    X = torch.tensor([[[[0.1, 0.2, 0.3], [0.4, 0.5, 0.1]]]])
+    H = spatial_rnn.LRNN_operation(X, P, "l2r")
+    print(H.shape)

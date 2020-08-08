@@ -6,6 +6,16 @@ Learning Recursive Filters for Low-Level Vision via a Hybrid Neural Network.
 The official implementation (Caffe version) can be accessed from 
 [here](https://github.com/Liusifei/caffe-lowlevel).
 
+## Introduction
+This paper proposed a hybrid neural network incorporating several spatially variant recurrent neural networks (RNNs) 
+as equivalents of a group of distinct recursive filters for each pixel. With the spatial RNN, we can tackle a lot of 
+low-level task including Edge-preserving Smoothing, Denoising, Inpainting and color interpolation.
+
+Although the spatial RNN introduce a deep CNN, however, the deep CNN only learns regulations of recurrent propagation 
+to guide recurrent propagation over an entire image. That is to say, the deep CNN is not responsible 
+for extracting complicated image features, so that it doesn't require convolutional layer with large channels, 
+which makes it lighter for Image Processing. Therefore, the spatial RNN can be faster than the traditional CNN methods.
+
 ## Prerequisites
 ### PyTorch
 Our implementation is based on PyTorch 1.4.0 ([https://pytorch.org/](https://pytorch.org/)) .
